@@ -79,8 +79,8 @@ names:
   77: '78'
   78: '79'
   79: '80'
-  80: contamination
-path: .
-train: data/final_train/images
-val: data/val_split.txt
+  80: Contamination
 nc: 81
+path: c:/Cattle-Vision Doctor/data
+train: images/train
+val: images/val

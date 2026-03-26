@@ -1,57 +1,27 @@
-# YOLO Dataset (Ignore heavy files)
-data/images/
-data/labels/
-data/final_train/
-data/augmented/
+﻿# [Vision Doctor] Finalized GitIgnore
+# Only keep the Core Inference Files
 
-# YOLO Logging & Runs
-runs/*
-!runs/detect/
-!runs/detect/Vision_Doctor_Final3/
+# 1. Ignore EVERYTHING by default
+/*
 
-# Model weights
-*.pt
-*.onnx
-*.engine
+# 2. Allow Core Launchers & Metadata
+!requirements.txt
+!README.md
+!.gitignore
+
+# 3. Allow Inference-Ready Components
+!models/
 !models/best_cow_contamination.pt
+!utils/
+utils/*
+!utils/test_inference.py
+!data/
+data/*
+!data/data.yaml
 
-# Output keep
-!output/
-!data/samples/
-
-# Python caches and artifacts
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-.cache
-*.cache
-
-# Virtual Environment
+# Extra root folders to ignore strictly
 cattle-env/
-venv/
-env/
-.env
-
-# Editor / OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
+runs/
+assets/
+.cache
+__pycache__/
