@@ -1,6 +1,5 @@
 ultralytics
+customtkinter
 opencv-python
-torch
-torchvision
-numpy
-tqdm
+pillow
+matplotlib

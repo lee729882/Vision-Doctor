@@ -1,27 +1,4 @@
-﻿# [Vision Doctor] Finalized GitIgnore
-# Only keep the Core Inference Files
-
-# 1. Ignore EVERYTHING by default
-/*
-
-# 2. Allow Core Launchers & Metadata
-!requirements.txt
-!README.md
-!.gitignore
-
-# 3. Allow Inference-Ready Components
-!models/
-!models/best_cow_contamination.pt
-!utils/
-utils/*
-!utils/test_inference.py
-!data/
-data/*
-!data/data.yaml
-
-# Extra root folders to ignore strictly
-cattle-env/
-runs/
-assets/
-.cache
 __pycache__/
+*.cache
+*.npy
+.vscode/
