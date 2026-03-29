@@ -2,3 +2,8 @@ __pycache__/
 *.cache
 *.npy
 .vscode/
+
+03_Development_Archive/
+cattle-env/
+Vision_Doctor_Public/
+runs/

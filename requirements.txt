@@ -1,5 +1,14 @@
+# [Vision Doctor] Core AI & Computer Vision
 ultralytics
-customtkinter
 opencv-python
+
+# [Vision Doctor] UI & Visualization
+customtkinter
 pillow
 matplotlib
+
+# [Vision Doctor] Support Utilities
+pyyaml
+torch
+torchvision
+torchaudio
