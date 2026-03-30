@@ -168,13 +168,14 @@ class WebcamApp(ctk.CTk):
         [핵심 로직] OpenCV 광학 흐름(RANSAC) & YOLO 방어 추적 루프 
         """
         DARKNESS_THRESHOLD = 40  
-        BLUR_THRESHOLD = 100     
-        MOVE_THRESHOLD = 5.0     
+        BLUR_THRESHOLD = 30     # 빠른 카메라 무빙 시 발생하는 모션 블러를 가려짐으로 오인하지 않게 낮춤
+        MOVE_THRESHOLD = 5.0    # 움직임 감지 민감도는 5.0으로 유지
         
         prev_gray = None
         turn_alert_counter = 0   
         last_move_dir = "UNKNOWN"
         alert_state_logged = False # 로그 중복 도배 방지용
+        covered_cooldown = 0     # 큰 물체가 치워질 때의 움직임을 이동으로 오인하는 현상 방지용
 
         while self.running and self.cap.isOpened():
             ret, frame = self.cap.read()
@@ -194,13 +195,21 @@ class WebcamApp(ctk.CTk):
                 prev_pts = cv2.goodFeaturesToTrack(prev_gray, maxCorners=150, qualityLevel=0.01, minDistance=15)
                 is_camera_moved = False
                 
-                if prev_pts is not None and len(prev_pts) > 10:
+                if prev_pts is None or len(prev_pts) < 35:
+                    # 화면에 질감(특징점)이 35개 미만으로 떨어지면 단조롭고 큰 물체(손, 종이, 옷 등)가 카메라를 넓게 틀어막은 것으로 간주
+                    is_covered = True
+                elif prev_pts is not None and len(prev_pts) > 10:
                     curr_pts, status, err = cv2.calcOpticalFlowPyrLK(prev_gray, gray, prev_pts, None)
                     idx = np.where(status == 1)[0]
+                    
+                    # 갑작스럽게 큰 물체가 난입하여 배경 특징점이 70% 이상 강제 소멸(추적 실패)된 경우 가려짐으로 간주
+                    if len(idx) / len(prev_pts) < 0.3:
+                        is_covered = True
+                        
                     good_prev = prev_pts[idx]
                     good_curr = curr_pts[idx]
                     
-                    if len(good_prev) > 10:
+                    if len(good_prev) > 10 and not is_covered:
                         transform, inliers = cv2.estimateAffinePartial2D(
                             good_prev, good_curr, method=cv2.RANSAC, ransacReprojThreshold=3.0
                         )
@@ -213,27 +222,32 @@ class WebcamApp(ctk.CTk):
                             
                             # 거리가 임계값 이상 움직였을 경우 방향 계산
                             if move_distance > MOVE_THRESHOLD:
-                                if inlier_ratio >= 0.7:
+                                # 화면 특징점의 대다수(65% 이상)가 일제히 동일하게 이동할 때만 '카메라 이동'으로 판별 (물체 움직임은 INLIER 비율이 낮음)
+                                # + 가려짐 해제 직후(covered_cooldown)에는 움직임 감지 무시
+                                if inlier_ratio >= 0.65 and covered_cooldown == 0:
                                     is_camera_moved = True
                                     turn_alert_counter = 20
                                     if abs(dx) > abs(dy):
                                         last_move_dir = "LEFT" if dx > 0 else "RIGHT"
                                     else:
                                         last_move_dir = "UP" if dy > 0 else "DOWN"
-                                else:
-                                    # 큰 화면이 일관성 없이 크게 뒤틀림 = 전체를 덮는 무언가 등장
-                                    is_covered = True
+                                # else: is_covered = True 구문을 삭제함. 카메라가 빠르게 이동하여 포인트 매칭이 깨지는 걸 렌즈 가려짐으로 무조건 오판하지 않도록 방어.
                 
-                # 움직임은 없지만 한 번에 화면 픽셀이 40% 이상 변했어도 가려짐 처리
-                if not is_camera_moved and change_ratio > 0.4:
+                # 움직임 통계를 벗어나 화면 픽셀의 압도적인 부분(80% 이상)이 한 번에 바뀔 때만 가려짐 처리 
+                if not is_camera_moved and change_ratio > 0.8:
                     is_covered = True
                     
             if is_covered:
                 turn_alert_counter = 0
                 is_turned = False
-            elif turn_alert_counter > 0:
-                is_turned = True
-                turn_alert_counter -= 1
+                covered_cooldown = 30 # 가려진 상태가 발생하면 해제 후 30프레임 동안은 이동 무시 (쿨다운)
+            else:
+                if covered_cooldown > 0:
+                    covered_cooldown -= 1
+                    
+                if turn_alert_counter > 0:
+                    is_turned = True
+                    turn_alert_counter -= 1
                 
             prev_gray = gray.copy()
 
