@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vision Doctor Launcher</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Pretendard:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-grid"></div>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    
+    <div class="container">
+        <header>
+            <div class="logo-area">
+                <span class="logo-icon">👁️</span>
+                <h1>Vision <span>Doctor</span></h1>
+            </div>
+            <p class="subtitle">Intelligent Monitoring Hub</p>
+        </header>
+
+        <main class="cards-wrapper">
+            <!-- Farm Scan Card -->
+            <div class="card glass-effect" id="farm-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">🐄</div>
+                <h2>Farm Scanner</h2>
+                <p>축사 및 농장 전용 시뮬레이션 진단 모듈을 실행합니다. 렌즈 오염도를 점검하고 자체 복구를 시도합니다.</p>
+                <button class="launch-btn" onclick="launchApp('farm', this)">
+                    <span class="btn-text">System Launch</span>
+                    <span class="btn-loader"></span>
+                </button>
+            </div>
+
+            <!-- CCTV Monitor Card -->
+            <div class="card glass-effect" id="cctv-card">
+                <div class="card-glow"></div>
+                <div class="card-icon">🎥</div>
+                <h2>Live CCTV Monitor</h2>
+                <p>실시간 모니터링 시스템입니다. 카메라 움직임 및 강력한 가려짐 인식 광학 흐름(RANSAC) 알고리즘을 지원합니다.</p>
+                <button class="launch-btn" onclick="launchApp('cctv', this)">
+                    <span class="btn-text">System Launch</span>
+                    <span class="btn-loader"></span>
+                </button>
+            </div>
+        </main>
+        
+        <div id="toast" class="toast"></div>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
